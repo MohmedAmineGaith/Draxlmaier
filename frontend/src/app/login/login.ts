@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ApiService } from '../services/api.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -26,13 +29,13 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   showPassword = false;
   errorMessage = '';
-
-  private readonly ADMIN_USERNAME = 'admin';
-  private readonly ADMIN_PASSWORD = 'admin123456';
+  private platformId = inject(PLATFORM_ID);
 
   constructor(
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private api: ApiService,
+    private auth: AuthService
   ) {
     this.loginForm = this.formBuilder.group({
       username: ['', Validators.required],
@@ -41,6 +44,10 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.auth.isLoggedIn) {
+      this.router.navigate(['/dash']);
+      return;
+    }
     this.setupInputAnimations();
   }
 
@@ -53,6 +60,7 @@ export class LoginComponent implements OnInit {
   }
 
   setupInputAnimations(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     const inputs = document.querySelectorAll('.form-input');
     inputs.forEach(input => {
       input.addEventListener('focus', () => {
@@ -85,17 +93,20 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
     this.isLoading = true;
 
-    setTimeout(() => {
-      if (this.username === this.ADMIN_USERNAME && this.password === this.ADMIN_PASSWORD) {
-        console.log('✅ Connexion réussie → navigation');
+    this.api.login(this.username, this.password).subscribe({
+      next: (res) => {
+        this.auth.saveSession(res.token, res.user.username);
         this.router.navigate(['/dash']);
-      } else {
-        this.errorMessage = 'Identifiant ou mot de passe incorrect';
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Identifiant ou mot de passe incorrect';
         this.loginForm.get('password')?.reset();
-      }
-      this.isLoading = false;
-    }, 1000);
+        this.isLoading = false;
+      },
+    });
   }
+
   goToHome(): void {
     this.router.navigate(['/visit-form']);
   }

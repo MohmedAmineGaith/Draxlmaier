@@ -1,0 +1,40 @@
+# Dépendances
+node_modules/
+
+# Variables d'environnement
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Dossiers IDE
+.vscode/
+.idea/
+
+# Couverture de tests
+coverage/
+
+# Build
+dist/
+build/
+
+# Fichiers temporaires
+tmp/
+temp/
+
+# Base de données locale (si utilisée)
+*.db
+*.sqlite
+
+# MongoDB (si tu stockes les données dans le projet)
+data/

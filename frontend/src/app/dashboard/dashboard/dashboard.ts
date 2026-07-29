@@ -1,60 +1,128 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 
-interface StatCard {
-  key: string;
-  label: string;
-  value: number;
-  delta: string;
-  trend: 'up' | 'down';
-  icon: string;
-  accent: 'teal' | 'navy' | 'red' | 'gold' | 'violet';
-}
+import { Router, RouterModule } from '@angular/router';
 
-interface Activity {
-  who: string;
-  action: string;
-  target: string;
-  time: string;
-  type: 'visite' | 'commentaire' | 'gestion' | 'responsable';
-}
+import { NgClass, NgFor, NgIf } from '@angular/common';
+
+import { Navbar } from '../navbar/navbar';
+
+import { ApiService } from '../../services/api.service';
+
+import { DashboardStats } from '../../models/api.models';
+
+
 
 @Component({
+
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule],
+
+  imports: [RouterModule, NgFor, NgIf, Navbar],
+
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css'],
+
+  styleUrl: './dashboard.css',
+
 })
-export class Dashboard {
-  today = new Date();
 
-  stats: StatCard[] = [
-    { key: 'visites', label: 'Total des visites', value: 1284, delta: '+12,4%', trend: 'up', icon: 'users', accent: 'teal' },
-    { key: 'accompagnement', label: 'Total accompagnement', value: 342, delta: '+4,1%', trend: 'up', icon: 'route', accent: 'navy' },
-    { key: 'responsables', label: 'Total des responsables', value: 58, delta: '+2', trend: 'up', icon: 'badge', accent: 'gold' },
-    { key: 'commentaires', label: 'Total des commentaires', value: 476, delta: '-1,8%', trend: 'down', icon: 'chat', accent: 'red' },
-    { key: 'gestion', label: 'Visites — gestion du contenu', value: 219, delta: '+7,6%', trend: 'up', icon: 'grid', accent: 'violet' },
-  ];
+export class Dashboard implements OnInit {
 
-  // Mini bar chart (visites par mois)
-  chart = [
-    { m: 'Jan', v: 62 }, { m: 'Fév', v: 78 }, { m: 'Mar', v: 91 },
-    { m: 'Avr', v: 74 }, { m: 'Mai', v: 110 }, { m: 'Jui', v: 128 },
-    { m: 'Jul', v: 142 }, { m: 'Aoû', v: 118 }, { m: 'Sep', v: 156 },
-    { m: 'Oct', v: 171 }, { m: 'Nov', v: 148 }, { m: 'Déc', v: 186 },
-  ];
-  chartMax = Math.max(...this.chart.map(c => c.v));
+  cards: Array<{ value: number; label: string; linkLabel: string; link?: string; icon: string; color: string }> = [];
 
-  activities: Activity[] = [
-    { who: 'Sami B.',   action: 'a enregistré une visite pour', target: 'Bosch Tunisie',        time: 'il y a 5 min',  type: 'visite' },
-    { who: 'Yasmine K.', action: 'a commenté',                  target: 'Rapport Q3',           time: 'il y a 22 min', type: 'commentaire' },
-    { who: 'Admin',      action: 'a ajouté un responsable',     target: 'Karim Trabelsi',       time: 'il y a 1 h',    type: 'responsable' },
-    { who: 'Mehdi Z.',   action: 'a mis à jour un contenu',     target: 'Procédure d’accueil',  time: 'il y a 2 h',    type: 'gestion' },
-    { who: 'Amel R.',    action: 'a clôturé une visite',        target: 'Delegation VW',        time: 'il y a 3 h',    type: 'visite' },
-  ];
+  loading = true;
 
-  formatNumber(n: number): string {
-    return n.toLocaleString('fr-FR');
+
+
+  showSelectMenu = false;
+
+  showNavbar = false;
+
+
+
+  constructor(private router: Router, private api: ApiService) {}
+
+
+
+  ngOnInit(): void {
+
+    this.api.getStats().subscribe({
+
+      next: (stats) => this.buildCards(stats),
+
+      error: () => this.buildCards({
+
+        totalVisites: 0,
+
+        totalAccompagnants: 0,
+
+        totalResponsables: 0,
+
+        totalCommentaires: 0,
+
+        totalVisiteurs: 0,
+
+        totalParticipants: 0,
+
+        enPresence: 0,
+
+        enLigne: 0,
+
+        enAttente: 0,
+
+      }),
+
+    });
+
   }
+
+
+
+  private buildCards(stats: DashboardStats): void {
+
+    this.cards = [
+
+      { value: stats.totalVisites, label: 'Total des visites', linkLabel: 'Liste des visiteurs', link: '/inscriptions', icon: 'fa fa-user', color: '#6f42c1' },
+
+      { value: stats.totalAccompagnants, label: 'En présence', linkLabel: 'Visites de projets le 7 juin', link: '/accompagnants', icon: 'fa fa-users', color: '#6c757d' },
+
+      { value: stats.totalResponsables, label: 'Total des responsables', linkLabel: 'Totaux', link: '/nuits', icon: 'sigma', color: '#009688' },
+
+      { value: stats.enAttente, label: 'En attente', linkLabel: 'Liste des commentaires', link: '/commentaires', icon: 'fa fa-comments', color: '#212529' },
+
+      { value: stats.enLigne, label: 'En ligne', linkLabel: 'Réception dîner CEB du 6 juin', link: '/diner-3-avril', icon: 'fa fa-coffee', color: '#03a9f4' },
+
+      { value: stats.totalParticipants, label: 'Total participants', linkLabel: 'Visites de projets le 7 juin', link: '/visites', icon: 'fa fa-building', color: '#f44336' },
+
+      { value: stats.totalVisiteurs, label: 'Visiteurs en attente', linkLabel: 'Gérer le contenu', link: '/contenu', icon: 'fa fa-file-text', color: '#4caf50' }
+
+    ];
+
+    this.loading = false;
+
+  }
+
+
+
+  onToggleNavbar() {
+
+    this.showNavbar = !this.showNavbar;
+
+  }
+
+
+
+  onSelectChange(event: Event) {
+
+    const selectElement = event.target as HTMLSelectElement;
+
+    const value = selectElement.value;
+
+    if (value) {
+
+      this.router.navigate([value]);
+
+    }
+
+  }
+
 }
+

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-visit-form',
@@ -13,6 +14,8 @@ import { Router, RouterModule } from '@angular/router';
 export class VisitFormComponent implements AfterViewInit, OnDestroy {
   submitted = false;
   sent = false;
+  sending = false;
+  submitError = '';
   form: FormGroup;
   private adminClickListener?: (event: Event) => void;
 
@@ -22,6 +25,7 @@ export class VisitFormComponent implements AfterViewInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private router: Router,
+    private api: ApiService,
     private elementRef: ElementRef<HTMLElement>
   ) {
     this.form = this.fb.group({
@@ -79,6 +83,7 @@ export class VisitFormComponent implements AfterViewInit, OnDestroy {
 
   onSubmit(): void {
     this.submitted = true;
+    this.submitError = '';
 
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -97,16 +102,23 @@ export class VisitFormComponent implements AfterViewInit, OnDestroy {
       motif:        this.clean(raw.motif),
       responsable:  this.clean(raw.responsable),
       but:          this.clean(raw.but),
-      submittedAt:  new Date().toISOString(),
     };
 
-    console.log('DRÄXLMAIER — Demande de visite:', data);
-
-    this.sent = true;
-    setTimeout(() => {
-      this.form.reset({ type: 'RH', motif: 'Réunion' });
-      this.submitted = false;
-      this.sent = false;
-    }, 2200);
+    this.sending = true;
+    this.api.submitVisitForm(data).subscribe({
+      next: () => {
+        this.sent = true;
+        this.sending = false;
+        setTimeout(() => {
+          this.form.reset({ type: 'RH', motif: 'Réunion' });
+          this.submitted = false;
+          this.sent = false;
+        }, 2200);
+      },
+      error: () => {
+        this.sending = false;
+        this.submitError = 'Impossible d\'envoyer la demande. Vérifiez que le serveur est démarré.';
+      },
+    });
   }
 }

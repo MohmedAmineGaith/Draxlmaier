@@ -15,6 +15,8 @@
     </div>
   </div>
 
+  <p *ngIf="loading" class="text-muted px-3">Chargement des inscriptions...</p>
+  <p *ngIf="loadError" class="text-danger px-3">{{ loadError }}</p>
 
   <!-- Action Buttons -->
   <div class="actions-section">
@@ -95,9 +97,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of filteredInscription(); let i = index" [class.selected]="isSelected(i)" class="table-row">
+          <tr *ngFor="let p of filteredInscription()" [class.selected]="isSelected(p.id)" class="table-row">
             <td class="checkbox-column">
-              <input type="checkbox" class="table-checkbox" [checked]="isSelected(i)" (change)="toggleParticipantSelection(i)">
+              <input type="checkbox" class="table-checkbox" [checked]="isSelected(p.id)" (change)="toggleParticipantSelection(p.id)">
             </td>
             <td *ngIf="visibleColumns.ordre" class="ordre-cell">
               <span class="ordre-badge">{{ p.ordre }}</span>

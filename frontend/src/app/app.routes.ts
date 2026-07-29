@@ -4,6 +4,7 @@ import { LoginComponent } from './login/login';
 import { Dashboard } from './dashboard/dashboard/dashboard';
 import { Inscription } from './dashboard/inscription/inscription';
 import { Navbar } from './dashboard/navbar/navbar';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -21,11 +22,13 @@ export const routes: Routes = [
   },
   {
     path: 'dash',
-    component: Dashboard
+    component: Dashboard,
+    canActivate: [authGuard]
   },
   {
     path: 'inscriptions',
-    component: Inscription
+    component: Inscription,
+    canActivate: [authGuard]
   },
   {
     path: 'navbar',

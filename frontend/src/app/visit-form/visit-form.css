@@ -420,3 +420,28 @@ a.footer-text:hover span { color: var(--navy-900); }
   color: #313033;
   font-size: 12px;
 }
+
+.field-error {
+  color: #c62828;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.form-success {
+  color: #2e7d32;
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.form-error {
+  color: #c62828;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+input.invalid,
+textarea.invalid,
+select.invalid {
+  border-color: #c62828;
+}

@@ -1,0 +1,145 @@
+<app-navbar></app-navbar>
+<div class="dashboard-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div class="title-section">
+        <div class="icon-wrapper">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div>
+          <h3 class="page-title">Liste des Visiteurs</h3>
+          <p class="page-subtitle">Gestion des inscriptions et Visiteurs</p>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+
+  <!-- Action Buttons -->
+  <div class="actions-section">
+    <div class="action-group">
+      <button class="action-btn secondary" (click)="copyData()">
+        <i class="bi bi-clipboard"></i>
+        Copier
+      </button>
+      
+      <div class="dropdown-wrapper">
+        <button class="action-btn secondary dropdown-toggle" (click)="toggleColumnVisibility()">
+          <i class="bi bi-eye"></i>
+          Colonnes
+        </button>
+      </div>
+      
+      <button class="action-btn secondary" (click)="selectAll()">
+        <i class="bi bi-check-all"></i>
+        Tout sélectionner
+      </button>
+      <button class="action-btn secondary" (click)="deselectAll()">
+        <i class="bi bi-x-square"></i>
+        Désélectionner
+      </button>
+    </div>
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-container">
+    <div class="table-wrapper">
+      <table #participantTable id="participantTable" class="modern-table">
+        <thead>
+          <tr>
+            <th class="checkbox-column">
+              <input type="checkbox" class="table-checkbox">
+            </th>
+            <th *ngIf="visibleColumns.ordre" class="sortable">
+              <span>Ordre</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.prenom" class="sortable">
+              <span>Prénom</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.nom" class="sortable">
+              <span>Nom</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.Organisation" class="sortable">
+              <span>Organisation</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.motif" class="sortable">
+              <span>Motif de visite</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.email" class="sortable">
+              <span>Email</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.telephone" class="phone-cell">
+              <span>Téléphone</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th *ngIf="visibleColumns.type" class="sortable">
+                <span>Type de Personne</span>
+                <i class="bi bi-arrow-down-up sort-icon"></i>
+              </th>
+              <th *ngIf="visibleColumns.derige" class="sortable">
+                <span>Dériger Vers</span>
+                <i class="bi bi-arrow-down-up sort-icon"></i>
+              </th>
+            <th *ngIf="visibleColumns.participation" class="sortable">
+              <span>Participation</span>
+              <i class="bi bi-arrow-down-up sort-icon"></i>
+            </th>
+            <th class="actions-column">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filteredInscription(); let i = index" [class.selected]="isSelected(i)" class="table-row">
+            <td class="checkbox-column">
+              <input type="checkbox" class="table-checkbox" [checked]="isSelected(i)" (change)="toggleParticipantSelection(i)">
+            </td>
+            <td *ngIf="visibleColumns.ordre" class="ordre-cell">
+              <span class="ordre-badge">{{ p.ordre }}</span>
+            </td>
+            <td *ngIf="visibleColumns.prenom" class="name-cell">{{ p.prenom }}</td>
+            <td *ngIf="visibleColumns.nom" class="name-cell">{{ p.nom }}</td>
+            <td *ngIf="visibleColumns.Organisation" class="Organisation-cell">{{ p.Organisation }}</td>
+            <td *ngIf="visibleColumns.motif" class="motif-cell">{{ p.motif }}</td>
+            <td *ngIf="visibleColumns.email" class="email-cell">
+              <a [href]="getMailtoLink(p.email)" class="email-link">{{ p.email }}</a>
+            </td>
+            <td *ngIf="visibleColumns.telephone" class="phone-cell">
+              <span *ngIf="p.telephone" class="phone-number">{{ p.telephone }}</span>
+              <span *ngIf="!p.telephone" class="no-data">-</span>
+            </td>
+
+            <td *ngIf="visibleColumns.type" class="type-cell">{{ p.type }}</td>
+            <td *ngIf="visibleColumns.derige" class="derige-cell">{{ p.derige }}</td>
+
+            <td *ngIf="visibleColumns.participation" class="participation-cell">
+              <span class="participation-badge" [ngClass]="getParticipationBadgeClass(p.participation)">
+                {{ formatParticipationStatus(p.participation) }}
+              </span>
+            </td>
+            <td class="actions-column">
+              <button class="btn-type yellow" (click)="selectParticipationType(p, 'EN_ATTENTE')"></button>
+              <button class="btn-type red" (click)="selectParticipationType(p, 'EN_PRESENCE')"></button>
+              <button class="btn-type blue" (click)="selectParticipationType(p, 'EN_LIGNE')"></button>
+              <button *ngIf="p.id === pendingTypeChange?.id" class="action-btn primary" (click)="confirmTypeChange()">Enregistrer</button>
+              <button class="action-btn danger" (click)="deleteFormulaire(p)">
+                <i class="bi bi-trash"></i>
+                Supprimer
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination Info -->
+  <div class="pagination-info">
+    <span>Affichage de {{ filteredInscription().length }} participants sur {{ totalParticipants }} au total</span>
+  </div>
+</div>

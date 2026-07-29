@@ -1,0 +1,30 @@
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000; 
+  }
+  
+  .navbar-collapse {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%; 
+  }
+  
+  .navbar-collapse.collapse {
+    display: none;
+  }
+  
+  .navbar-collapse.show {
+    display: block;
+  }
+  
+  .navbar-nav .nav-link {
+    font-size: 1rem;
+    padding: 10px 15px;
+  }
+  
+  .form-select {
+    width: 100%;
+    padding: 0.5rem;
+  }
+  

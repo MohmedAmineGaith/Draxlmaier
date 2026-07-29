@@ -1,0 +1,90 @@
+<main class="login-main">
+  <div class="login-bg" aria-hidden="true"></div>
+  <div class="login-shell">
+    <div class="login-side">
+      <span class="side-kicker">ESPACE SÉCURISÉ</span>
+      <h1 class="side-title">Bienvenue sur le portail<br/><span>DRÄXLMAIER Tunisie</span></h1>
+      <p class="side-lead">Connectez-vous pour accéder à votre espace personnel, gérer vos visites et consulter vos documents.</p>
+      <ul class="side-points">
+        <li><span class="dot"></span> Accès protégé & confidentiel</li>
+        <li><span class="dot"></span> Suivi des demandes en temps réel</li>
+        <li><span class="dot"></span> Support dédié aux partenaires</li>
+      </ul>
+    </div>
+    <section class="login-card" aria-labelledby="login-title">
+      <header class="login-card-head">
+        <div class="lock-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="10" width="16" height="11" rx="2"/>
+            <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+          </svg>
+        </div>
+        <h2 id="login-title">Connexion</h2>
+        <p class="login-sub">Entrez vos identifiants pour continuer</p>
+      </header>
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin($event)" id="login-form" class="login-form" novalidate>
+        <div class="field">
+          <label for="identifier">Identifiant</label>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21a8 8 0 1 0-16 0"/><circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input id="identifier" formControlName="username" name="identifier" type="text" autocomplete="username" placeholder="votre.identifiant" required />
+          </div>
+          <span class="field-error" *ngIf="loginForm.get('username')?.touched && loginForm.get('username')?.invalid">Identifiant requis</span>
+        </div>
+        <div class="field">
+          <div class="label-row">
+            <label for="password">Mot de passe</label>
+          </div>
+          <div class="input-wrap">
+            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+            </svg>
+            <input 
+            id="password" 
+            formControlName="password" 
+            [type]="showPassword ? 'text' : 'password'" 
+            autocomplete="current-password" 
+            placeholder="••••••••"/>
+            <button type="button" class="toggle-pass" (click)="togglePasswordVisibility()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">
+            Mot de passe requis (6 caractères min.)
+          </span>
+        </div>
+        <label class="remember">
+          <input type="checkbox" id="remember" />
+          <span class="check-box" aria-hidden="true"></span>
+          <span>Se souvenir de moi</span>
+          <a href="#" class="forgot">Mot de passe oublié ?</a>
+        </label>
+        <div class="actions">
+          <a href="/visit-form" class="btn btn-ghost">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            Retour à l'accueil
+          </a>
+          <button class="btn btn-primary" [disabled]=" isLoading || loginForm.invalid" (click)="onLogin()">
+            Se connecter
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </div>
+        <p class="secure-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/></svg>
+          Connexion chiffrée — vos données sont protégées.
+        </p>
+      </form>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer compact">
+  <div class="footer-inner">
+    <span class="footer-text">© <span id="year"></span> DRÄXLMAIER Group — Tunisie</span>
+    <a href="#" class="footer-text">Politique de confidentialité</a>
+  </div>
+</footer>
